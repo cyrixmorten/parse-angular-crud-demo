@@ -1,0 +1,40 @@
+<div class="table-scrollable" ng-controller="GuardCtrl">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Opret vagt</h3>
+		</div>
+		<div class="panel-body ">
+			<table class="table">
+				<tr>
+
+					<td><input placeholder="Guard id" class="form-control" type="number"
+						ng-model="createData.guardId" /></td>
+					<td><input placeholder="Name" class="form-control"
+						type="text" ng-model="createData.name" /></td>
+
+					<td data-title="''" width="200">
+						<a href="" class="btn btn-default" ng-click="add()">Create</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Vagter</h3>
+		</div>
+		<div class="panel-body">
+			<table ng-table="tableParams" class="table">
+				<tr ng-repeat="crudObject in crudObjects">
+					<td data-title="'Guard id'"><input ng-readonly="!crudObject.$edit"
+						class="form-control" type="number" ng-model="crudObject.guardId" /></td>
+					<td data-title="'Name'"><input ng-readonly="!crudObject.$edit"
+						class="form-control" type="text" ng-model="guard.name" />
+					</td>
+					<td data-title="''" width="200"><crud-edit-delete /></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+

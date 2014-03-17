@@ -1,0 +1,58 @@
+<div class="table-scrollable" ng-controller="ClientCtrl">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Create client</h3>
+		</div>
+		<div class="panel-body ">
+			<table class="table">
+				<tr>
+
+					<td><input placeholder="Name" class="form-control" type="text"
+						ng-model="createData.name" /></td>
+					<td><input placeholder="Address" class="form-control"
+						type="text" ng-model="createData.addressName" /></td>
+					<td><input placeholder="Address number" class="form-control"
+						type="text" ng-model="createData.addressNumber" /></td>
+					<td><input placeholder="City" class="form-control" type="text"
+						ng-model="createData.cityName" /></td>
+					<td><input placeholder="Zipcode" class="form-control"
+						type="text" ng-model="createData.zipcode" /></td>
+					<td><input placeholder="Email" class="form-control"
+						type="text" ng-model="createData.email" /></td>
+
+					<td data-title="''" width="200">
+						<a href="" class="btn btn-default" ng-click="add()">Create</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Clients</h3>
+		</div>
+		<div class="panel-body">
+			<table ng-table="tableParams" class="table">
+				<tr ng-repeat="crudObject in crudObjects">
+					<td data-title="'Name'"><input ng-readonly="!crudObject.$edit"
+						class="form-control" type="text" ng-model="crudObject.name" /></td>
+					<td data-title="'Address'"><input ng-readonly="!crudObject.$edit"
+						class="form-control" type="text" ng-model="crudObject.addressName" />
+					</td>
+					<td data-title="'Address number'"><input
+						ng-readonly="!crudObject.$edit" class="form-control" type="text"
+						ng-model="crudObject.addressNumber" /></td>
+					<td data-title="'City'"><input ng-readonly="!crudObject.$edit"
+						class="form-control" type="text" ng-model="crudObject.cityName" /></td>
+					<td data-title="'Zipcode'"><input
+						ng-readonly="!crudObject.$edit" class="form-control" type="text"
+						ng-model="crudObject.zipcode" /></td>
+					<td data-title="'Email'"><input ng-readonly="!crudObject.$edit"
+						class="form-control" type="text" ng-model="crudObject.email" /></td>
+					<td data-title="''" width="200"><crud-edit-delete /></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+
