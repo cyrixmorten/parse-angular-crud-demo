@@ -10,8 +10,8 @@ app
 				function() {
 
 					Parse.initialize(
-							"Application ID",
-							"Javascript Key");
+							"ooJivahc5oCdhS437pbRE9g3jLyK0I6YlRThwrH4",
+							"I6m51VhcUZOFzyFg3gomRKYkJvWE1btCkaq9OvpZ");
 
 					this.Account = new function() {
 
@@ -190,7 +190,7 @@ app.factory('ParseGuardObject', [ 'ParseService', function(ParseService) {
 	return factory;
 
 } ]);
-app.factory('ClientObject', [
+app.factory('ParseClientObject', [
 		'ParseService',
 		function(ParseService) {
 
@@ -224,7 +224,7 @@ app.factory('ClientObject', [
 			return factory;
 
 		} ]);
-app.factory('CircuitObject', [ 'ParseService', function(ParseService) {
+app.factory('ParseCircuitObject', [ 'ParseService', function(ParseService) {
 
 	var factory = {};
 

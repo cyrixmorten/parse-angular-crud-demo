@@ -185,22 +185,24 @@ controllerModule
 
 										});
 
-								modalInstance.result
-										.then(function() {
-											parseobject
-													.destroy({
-														success : function(
-																result) {
-															// remove from scope
-															var index = $scope.crudObjects
-																	.indexOf(result)
-															$scope.crudObjects
-																	.splice(
-																			index,
-																			1);
-														}
-													});
-										});
+								modalInstance.result.then(function() {
+									var index = $scope.crudObjects
+											.indexOf(scopedParseGuard)
+									 $scope.crudObjects.splice(index,
+											1);
+									parseobject.destroy({
+										success : function(result) {
+										},
+										failure : function(result, e) {
+											// reinsert into the array
+											console.log(e.message);
+											$scope.crudObjects.splice(index, 0,
+													scopedParseGuard);
+											// TODO show information about the
+											// error
+										}
+									});
+								});
 							}
 
 						} ]).directive('crudEditDelete', function() {
