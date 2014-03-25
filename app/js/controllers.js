@@ -220,17 +220,17 @@ controllerModule.controller('GuardCtrl', [ '$scope', 'ParseGuardObject',
 
 		} ]);
 
-controllerModule.controller('ClientCtrl', [ '$scope', 'ClientObject',
-		function($scope, ClientObject) {
+controllerModule.controller('ClientCtrl', [ '$scope', 'ParseClientObject',
+		function($scope, ParseClientObject) {
 
-			$scope.$parent.ParseCrud = ClientObject.getParseObject;
+			$scope.$parent.ParseCrud = ParseClientObject.getParseObject;
 
 		} ]);
 
-controllerModule.controller('CircuitCtrl', [ '$scope', 'CircuitObject',
-		function($scope, CircuitObject) {
+controllerModule.controller('CircuitCtrl', [ '$scope', 'ParseCircuitObject',
+		function($scope, ParseCircuitObject) {
 
-			$scope.$parent.ParseCrud = CircuitObject.getParseObject;
+			$scope.$parent.ParseCrud = ParseCircuitObject.getParseObject;
 
 		} ]);
 
