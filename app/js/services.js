@@ -10,8 +10,8 @@ app
 				function() {
 
 					Parse.initialize(
-							"ooJivahc5oCdhS437pbRE9g3jLyK0I6YlRThwrH4",
-							"I6m51VhcUZOFzyFg3gomRKYkJvWE1btCkaq9OvpZ");
+							"Application ID",
+							"Javascript Key");
 
 					this.Account = new function() {
 
