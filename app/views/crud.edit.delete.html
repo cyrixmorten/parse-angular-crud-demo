@@ -2,8 +2,8 @@
 	class="btn btn-default btn-sm"
 	ng-click="crudObject.$edit = true; edit()">{{'EDIT' | translate}}</a>
 <a ng-if="!crudObject.$edit" ng-hide="performingEdit" 
-	class="btn btn-default btn-sm" ng-click="remove(crudObject)">{{'REMOVE' | translate}}</a>
+	class="btn btn-default btn-sm" ng-click="remove(crudObject)">{{'DELETE' | translate}}</a>
 <a ng-if="crudObject.$edit" class="btn btn-primary btn-sm"
-	ng-click="crudObject.$edit = false; save(crudObject)">{{'SAVE' | translate}}</a>
+	ng-click="crudObject.$edit = false; save(crudObject)">{{'UPDATE' | translate}}</a>
 <a ng-if="crudObject.$edit" class="btn btn-primary btn-sm"
 	ng-click="crudObject.$edit = false; cancel()">{{'CANCEL' | translate}}</a>

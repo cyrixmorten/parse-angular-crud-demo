@@ -15,9 +15,9 @@ controllerModule.config(['$translateProvider' , function($translateProvider) {
 		"LOGOUT" : 'Logout',
 		// CRUD
 		"CREATE" : 'Create',
-		"SAVE" : 'Save',
+		"UPDATE" : 'Update',
+		"DELETE" : 'Delete',
 		"EDIT" : 'Edit',
-		"REMOVE" : 'Remove',
 		"CANCEL" : 'Cancel',
 		// COMMON
 		"NAME" : 'Name',
@@ -61,9 +61,9 @@ controllerModule.config(['$translateProvider' , function($translateProvider) {
 		"LOGOUT" : 'Log ud',
 		// CRUD
 		"CREATE" : 'Opret',
-		"SAVE" : 'Gem',
+		"UPDATE" : 'Gem',
+		"DELETE" : 'Slet',
 		"EDIT" : 'Rediger',
-		"REMOVE" : 'Slet',
 		"CANCEL" : 'Annuller',
 		// COMMON
 		"NAME" : 'Navn',
