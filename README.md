@@ -1,33 +1,57 @@
 parse-angular-crud-demo
 =======================
 
-Easy-to-deploy CRUD interface for simple Parse objects
+Easy-to-deploy CRUD interface for Parse objects
 
-	new ParseService.StandardParseObject({
-		objectname : 'Guard',
-		attrs : [ 'guardId', 'name' ]
-	}, {
-		guardId : '',
-		name : ''
-	}, function(guard) {
-		return {
-			guardId : guard.getGuardId(),
-			name : guard.getName()
-		}
-	}, {
-		ACL : new Parse.ACL(ParseService.Account.getCurrentUser()),
-		owner : ParseService.Account.getCurrentUser()
-	});
-    
-The above is 90% of the code needed to define a CRUD enabled ParseObject.
+Making it possible for end-users to **Cr**eate, **U**pdate and **D**elete objects using [parse.com](www.parse.com) as backend.
 
-StandardParseObject takes 4 arguments:
+> Due to a lot of refactoring and posibly a lot of changes to come, I choose not to write an extensive how-to and rather leave the simplest example of one of the objects used in the demo. Luckily the demo is easy to run, so feel free to try it and explore the code.
 
-1. An object defining the name of the ParseObject and a list of attributes. The list of attributes is used by parse-angular-patch to automatically generate setters/getters. You do not need to specify all of the cols of your ParseObject, only those you want to expose to CRUD features.
-2. An empty template of the cols you would like to expose to CRUD features. Should be a subset of the attrs from the first argument.
-3. A filled template using the automatically generated getters.
-4. A default template. This template is automatically applied to any create or edit action, which is suitable for ACL definitions or owner relations as shown above.
+Model definition of a ParseObject `/js/services.js`:
 
+		factory.ParseGuardObject = new StandardParseObject({
+			objectname : 'Guard',
+			attrs : [ 'guardId', 'name' ],
+			emptyTemplate : {
+				guardId : '',
+				name : ''
+			},
+			filledTemplate : function(guard) {
+				return {
+					guardId : guard.getGuardId(),
+					name : guard.getName()
+				};
+			}
+		});
+            
+Controller code exposing CRUD features:
+
+	controllerModule.controller('GuardCtrl', [ '$scope', 'ParseObjects',
+			function($scope, ParseObjects) {
+				// get object from the factory
+				var ParseObject = ParseObjects.ParseGuardObject;
+	
+				// apply standard values that are not visible in UI
+				ParseObject.setHiddenData({
+					ACL : new Parse.ACL(Parse.User.current()),
+					owner : Parse.User.current()
+				});
+	
+				// attatch the ParseObject to the parent controller CRUDCtrl
+				$scope.$parent.ParseCrud = ParseObject;
+				
+				// load the data
+				$scope.$parent.loadData();
+	
+			} ]);
+            
+And finally the View that talks to GuardCtrl can be found at `/partials/crud/guards.html`
+
+The following part of `/js/app.js` ensures that the Controller `CRUDCtrl` is a parent for `GuardCtrl`:
+
+	segment('crud', {templateUrl: 'partials/crud.html', controller: 'CRUDCtrl'}).
+    within().
+		segment('guards', {templateUrl: 'partials/crud/guards.html', controller: 'GuardCtrl'})
 
 ### Pojects used to create this demo:
 
@@ -35,25 +59,10 @@ StandardParseObject takes 4 arguments:
 - [angular-route-segment](https://github.com/artch/angular-route-segment) Supports child scopes in partials 
 - [parse-angular-patch](https://github.com/brandid/parse-angular-patch) Makes working with Parse easier
 - [ng-table](https://github.com/esvit/ng-table) Nice Angular table
+- [angular-translate](https://github.com/angular-translate/angular-translate) Using basic translation
 
 ### Running the demo
 
 1. Navigate to parse-angular-crud-demo/app/js/services and replace `Application ID` and `Javascript Key`
 2. Install node.js and run `parse-angular-crud-demo/node scripts/web-server.js`
 3. Open a browser and navigate to `http://localhost:8000/app/index.html`
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
