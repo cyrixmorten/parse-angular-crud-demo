@@ -23,26 +23,25 @@
 			<div class="container">
 				<div class="container">
 					<div class="navbar-header">
-						<a class="navbar-brand" href="">GuardSwift</a>
+						<a class="navbar-brand" href="#/home">GuardSwift</a>
 					</div>
 
 
 					<button ng-if="ParseAccount.isLoggedIn()" type="button"
 						class="navbar-right btn btn-default navbar-btn"
-						ng-click="go('/logout')">Logout</button>
-					<button ng-if="!ParseAccount.isLoggedIn()" type="button"
-						class="navbar-right btn btn-default navbar-btn"
-						ng-click="go('/login')">Login</button>
+						ng-click="logout()">{{'LOGOUT' | translate}}</button>
 
 					<ul class="nav navbar-nav">
 						<!--<li ng-class="{active: $routeSegment.startsWith('home')}"><a
 						href="#/home">Hjem</a></li> -->
-						<li ng-class="{active: $routeSegment.startsWith('guards')}"><a
-							href="#/guards">GuardParseObject</a></li>
-						<li ng-class="{active: $routeSegment.startsWith('clients')}"><a
-							href="#/clients">ClientParseObject</a></li>
-						<li ng-class="{active: $routeSegment.startsWith('circuits')}"><a
-							href="#/circuits">CircuitParseObject</a></li>
+						<li ng-class="{active: $routeSegment.contains('guards')}"><a
+							href="#/crud/guards">{{'GUARDS' | translate}}</a></li>
+						<li ng-class="{active: $routeSegment.contains('clients')}"><a
+							href="#/crud/clients">{{'CLIENTS' | translate}}</a></li>
+						<li ng-class="{active: $routeSegment.contains('circuits')}"><a
+							href="#/crud/circuits">{{'CIRCUITS' | translate}}</a></li>
+						<li ng-class="{active: $routeSegment.contains('circuitunits')}"><a
+							href="#/crud/circuitunits">{{'CIRCUITUNITS' | translate}}</a></li>
 					</ul>
 				</div>
 			</div>
@@ -54,12 +53,7 @@
 	</div>
 
 	<div id=loading class=alert ng-show="loader.show">Loading...</div>
-
-	</div>
-
-	<!-- In production use:
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.1/angular.min.js"></script>
-  -->
+	
 
 
 	<!-- JQuery -->
@@ -70,6 +64,7 @@
 	<script type="text/javascript"
 		src="http://www.parsecdn.com/js/parse-1.2.17.min.js"></script>
 
+	<!-- Angular -->
 	<script src="lib/angular/angular.js"></script>
 	<script src="lib/angular/angular-route.js"></script>
 	<script src="lib/angular/angular-animate.js"></script>
@@ -78,9 +73,12 @@
 	<script src="lib/ng-table.min.js"></script>
 	<script src="lib/parse-angular.js"></script>
 	<script src="lib/angular-route-segment.js"></script>
+	<script src="lib/angular-translate.js"></script>
 	<script src="lib/route-styles.js"></script>
 	<script src="lib/bootstrap.js"></script>
 	<script src="lib/ui-bootstrap-tpls-0.10.0.min.js"></script>
+	<!-- <script src="//mgcrea.github.io/angular-strap/static/scripts/angular-strap.min.js"></script>
+    <script src="//mgcrea.github.io/angular-strap/static/scripts/angular-strap.tpl.min.js"></script> -->
 
 	<!-- Internal libraries -->
 	<script src="js/app.js"></script>

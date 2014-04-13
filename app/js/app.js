@@ -28,16 +28,30 @@ config(['$routeSegmentProvider', '$routeProvider', function($routeSegmentProvide
 	when('/login', 'login').
 	when('/logout', 'logout').
 	when('/home', 'home').
-	when('/guards', 'guards').
-	when('/clients', 'clients').
-	when('/circuits', 'circuits').
+	when('/crud', 'crud').
+	when('/crud/guards', 'crud.guards').
+	when('/crud/clients', 'crud.clients').
+	when('/crud/circuits', 'crud.circuits').
+	when('/crud/circuitunits', 'crud.circuitunits').
+	when('/crud/circuitunits/:id', 'crud.circuitunits.item').
+
 	
 	segment('login', {templateUrl: 'partials/login.html', controller: 'LoginCtrl'}).
 	segment('logout', {templateUrl: 'partials/logout.html', controller: 'LogoutCtrl'}).
 	segment('home', {templateUrl: 'partials/home.html', controller: 'HomeCtrl'}).
-	segment('guards', {templateUrl: 'partials/guards.html', controller: 'CRUDCtrl'}).
-	segment('clients', {templateUrl: 'partials/clients.html', controller: 'CRUDCtrl'}).
-	segment('circuits', {templateUrl: 'partials/circuits.html', controller: 'CRUDCtrl'});
+	segment('crud', {templateUrl: 'partials/crud.html', controller: 'CRUDCtrl'}).
+    within().
+		segment('guards', {templateUrl: 'partials/crud/guards.html', controller: 'GuardCtrl'}).
+		segment('clients', {templateUrl: 'partials/crud/clients.html', controller: 'ClientCtrl'}).
+		segment('circuits', {templateUrl: 'partials/crud/circuits.html', controller: 'CircuitCtrl'}).
+		segment('circuitunits', {templateUrl: 'partials/crud/circuitunits.html', controller: 'CircuitunitCtrl'})
+		.within()
+        .segment('item', {
+            templateUrl: 'partials/crud/circuitunits.selected.html',
+            dependencies: ['id', 'selectedCircuit'],
+            controller: 'CircuitunitSelectedCtrl'})
+            .up()
+     .up();
 	
 // $routeSegmentProvider.when('/home', {templateUrl: 'partials/home.html',
 // controller: 'HomeCtrl'});

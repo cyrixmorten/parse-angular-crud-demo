@@ -4,57 +4,87 @@
 
 var app = angular.module('GuardSwiftApp.services', [ 'ngAnimate',
 		'parse-angular', 'parse-angular.enhance', 'ngTable' ]);
+app.service('ParseService', function() {
+
+	Parse.initialize("Application ID",
+			"Javascript Key");
+
+	this.Account = new function() {
+
+		this.isLoggedIn = function() {
+			if (Parse.User.current()) {
+				return true;
+			}
+			return false;
+		};
+
+		this.getCurrentUser = function() {
+			return Parse.User.current();
+		};
+
+		this.login = function(username, password, callback) {
+			Parse.User.logIn(username, password, callback);
+		};
+
+		this.logout = function() {
+			Parse.User.logOut();
+		};
+
+	};
+
+});
 app
-		.service(
-				'ParseService',
+		.factory(
+				'StandardParseObject',
 				function() {
 
-					Parse.initialize(
-							"Application ID",
-							"Javascript Key");
+					var StandardParseObject = function(construct) {
 
-					this.Account = new function() {
-
-						this.isLoggedIn = function() {
-							if (Parse.User.current()) {
-								return true;
-							}
-							return false;
-						}
-
-						this.getCurrentUser = function() {
-							return Parse.User.current();
-						}
-
-						this.login = function(username, password, callback) {
-							Parse.User.logIn(username, password, callback);
-						}
-
-						this.logout = function() {
-							Parse.User.logOut();
-						}
-
-					};
-
-					var StandardParseObject = function(construct,
-							template_empty, template_filled, template_default) {
-
-						// Define an object with static methods
-						var StandardParseObject = Parse.Object.extend({
+						// extinding parse using parse-angular-patch to generate
+						// setters/getters
+						Parse.Object.extend({
 							className : construct.objectname,
 							attrs : construct.attrs
-						},
-						// Static methods
-						{
-							loadAll : function() {
-								var query = new Parse.Query(
-										construct.objectname);
-								return query.find();
-							}
 						});
 
+						var hiddenData = {};
+
+						var parseObjectHolder = [];
+
+						this.storeParseObject = function(parseObject) {
+							var holder = {
+								id : parseObject.id,
+								object : parseObject
+							};
+							parseObjectHolder.push(holder);
+						};
+
+						this.findParseObject = function(scopedParseObject) {
+							var neel = '';
+							angular.forEach(parseObjectHolder, function(
+									storedParseObject) {
+								var sameObjectId = angular.equals(
+										storedParseObject.id,
+										scopedParseObject.objectId);
+								if (sameObjectId) {
+									neel = storedParseObject.object;
+								}
+							});
+							return neel;
+						};
+
+						// returns a safe copy of the empty template
 						this.getTemplate = function() {
-							return angular.copy(template_empty);
+							return angular.copy(construct.emptyTemplate);
+						};
+
+						this.setHiddenData = function(data) {
+							hiddenData = data;
+						};
+
+						this.addHiddenData = function(propertyName,
+								propertyValue) {
+							hiddenData[propertyName] = propertyValue;
 						};
 
 						/*
@@ -63,10 +93,12 @@ app
 						 * the property parseobject
 						 */
 						this.getScopeFriendlyObject = function(parseObject) {
-							var scopedObject = template_filled(parseObject);
-							scopedObject.parseobject = parseObject;
+							var scopedObject = construct
+									.filledTemplate(parseObject);
+							scopedObject.objectId = parseObject.id;
+							this.storeParseObject(parseObject);
 							return scopedObject;
-						}
+						};
 
 						/*
 						 * returns an array of objects with properties based on
@@ -80,41 +112,75 @@ app
 								scopedObjects.push(scopedGuard);
 							}
 							return scopedObjects;
-						}
+						};
+
+						var _this = this;
 
 						// adds a new object using current properties
-						this.add = function(data, callback) {
+						this.add = function(data, promise) {
 							// ensure that the data adheres to the template
-							if (verifyDataAgainstTemplate(data, template_empty)) {
+							if (verifyDataAgainstTemplate(data,
+									construct.emptyTemplate)) {
 								// align with filled template (in case of
 								// default values such as ACL)
 								var aligned_data = alignDataWithTemplate(data);
 
-								return new Parse.Object(construct.objectname)
-										.save(aligned_data, callback);
+								new Parse.Object(construct.objectname).save(
+										aligned_data).then(function(result) {
+									_this.storeParseObject(result);
+									promise.resolve(result);
+								}, function(error) {
+									promise.reject(error);
+								});
 							} else {
+								promise.reject("data does not match template");
 								throw "data does not match template "
-										+ objectKeysStringified(data) + " !== "
-										+ objectKeysStringified(template_empty);
+										+ objectKeysStringified(data)
+										+ " !== "
+										+ objectKeysStringified(construct.emptyTemplate);
+							}
+							;
+						};
+
+						// updates an existing object
+						this.update = function(scopedParseObject) {
+							var parseObject = this
+									.findParseObject(scopedParseObject);
+							if (parseObject) {
+								// extract data and align with template
+								var aligned_data = alignDataWithTemplate(
+										scopedParseObject, construct
+												.filledTemplate(parseObject));
+
+								return parseObject.save(aligned_data);
+							} else {
+								return new Parse.promise.error(
+										'Did not find a parseObject with id '
+												+ scopedParseObject.objectId);
 							}
 						};
 
-						this.save = function(scopedParseObject, callback) {
-							if (scopedParseObject) {
-
-								var parseObject = scopedParseObject.parseobject;
-
-								// extract data and align with template
-								var aligned_data = alignDataWithTemplate(
-										scopedParseObject,
-										template_filled(parseObject));
-
-								parseObject.save(aligned_data, callback);
+						this.remove = function(scopedParseObject) {
+							var parseObject = this
+									.findParseObject(scopedParseObject);
+							if (parseObject) {
+								return parseObject.destroy();
+							} else {
+								return new Parse.promise.error(
+										'Did not find a parseObject with id '
+												+ scopedParseObject.objectId);
 							}
-						}
+						};
 
-						this.fetchAll = function(callback) {
-							StandardParseObject.loadAll().then(callback);
+						this.fetchAllQuery = function() {
+							return new Parse.Query(construct.objectname);
+						};
+
+						this.fetchAll = function(query) {
+							if (!query) {
+								query = this.fetchAllQuery();
+							}
+							return query.find();
 						};
 
 						/**
@@ -145,10 +211,10 @@ app
 							}
 
 							// add missing properties
-							for ( var attrname in template_default) {
+							for ( var attrname in hiddenData) {
 								if (!data.hasOwnProperty(attrname)) {
-									data[attrname] = template_default[attrname];
-									console.log('add default ' + attrname);
+									data[attrname] = hiddenData[attrname];
+									console.log('add hidden ' + attrname);
 								}
 							}
 							return data;
@@ -164,88 +230,96 @@ app
 
 					};
 
-					this.StandardParseObject = StandardParseObject;
+					return StandardParseObject;
 
 				});
-app.factory('ParseGuardObject', [ 'ParseService', function(ParseService) {
 
-	var factory = {};
-
-	factory.getParseObject = new ParseService.StandardParseObject({
-		objectname : 'Guard',
-		attrs : [ 'owner', 'guardId', 'name' ]
-	}, {
-		guardId : '',
-		name : ''
-	}, function(guard) {
-		return {
-			guardId : guard.getGuardId(),
-			name : guard.getName()
-		}
-	}, {
-		ACL : new Parse.ACL(ParseService.Account.getCurrentUser()),
-		owner : ParseService.Account.getCurrentUser()
-	});
-
-	return factory;
-
-} ]);
-app.factory('ParseClientObject', [
+app.factory('ParseObjects', [
 		'ParseService',
-		function(ParseService) {
+		'StandardParseObject',
+		function(ParseService, StandardParseObject) {
 
 			var factory = {};
 
-			factory.getParseObject = new ParseService.StandardParseObject({
-				objectname : 'Client',
-				attrs : [ 'owner', 'name', 'addressName', 'addressNumber',
-						'cityName', 'zipcode', 'email' ]
-			}, {
-				name : '',
-				addressName : '',
-				addressNumber : '',
-				cityName : '',
-				zipcode : '',
-				email : ''
-			}, function(client) {
-				return {
-					name : client.getName(),
-					addressName : client.getAddressName(),
-					addressNumber : client.getAddressNumber(),
-					cityName : client.getCityName(),
-					zipcode : client.getZipcode(),
-					email : client.getEmail()
+			factory.ParseGuardObject = new StandardParseObject({
+				objectname : 'Guard',
+				attrs : [ 'guardId', 'name' ],
+				emptyTemplate : {
+					guardId : '',
+					name : ''
+				},
+				filledTemplate : function(guard) {
+					return {
+						guardId : guard.getGuardId(),
+						name : guard.getName()
+					};
 				}
-			}, {
-				ACL : new Parse.ACL(ParseService.Account.getCurrentUser()),
-				owner : ParseService.Account.getCurrentUser()
+			});
+
+			factory.ParseClientObject = new StandardParseObject({
+				objectname : 'Client',
+				attrs : [ 'number', 'name', 'addressName', 'addressNumber',
+						'cityName', 'zipcode', 'email' ],
+				emptyTemplate : {
+					number : '',
+					name : '',
+					addressName : '',
+					addressNumber : '',
+					cityName : '',
+					zipcode : '',
+					email : ''
+				},
+				filledTemplate : function(client) {
+					return {
+						number : client.getNumber(),
+						name : client.getName(),
+						addressName : client.getAddressName(),
+						addressNumber : client.getAddressNumber(),
+						cityName : client.getCityName(),
+						zipcode : client.getZipcode(),
+						email : client.getEmail()
+					};
+				}
+			});
+			factory.ParseCircuitObject = new StandardParseObject({
+				objectname : 'Circuit',
+				attrs : [ 'name', 'timeStart', 'timeEnd' ],
+				emptyTemplate : {
+					name : '',
+					timeStart : '',
+					timeEnd : ''
+				},
+				filledTemplate : function(circuit) {
+					return {
+						name : circuit.getName(),
+						timeStart : circuit.getTimeStart(),
+						timeEnd : circuit.getTimeEnd()
+					};
+				}
+			});
+
+			factory.ParseCircuitunitObject = new StandardParseObject({
+				objectname : 'CircuitUnit',
+				attrs : [ 'name', 'client', 'timeStart', 'timeEnd' ],
+				emptyTemplate : {
+					name : '',
+					client : '',
+					timeStart : '',
+					timeEnd : ''
+				},
+				filledTemplate : function(circuitunit) {
+					return {
+						name : circuitunit.getName(),
+						client : circuitunit.getClient(),
+						timeStart : circuitunit.getTimeStart(),
+						timeEnd : circuitunit.getTimeEnd()
+					};
+				}
 			});
 
 			return factory;
 
 		} ]);
-app.factory('ParseCircuitObject', [ 'ParseService', function(ParseService) {
-
-	var factory = {};
-
-	factory.getParseObject = new ParseService.StandardParseObject({
-		objectname : 'Circuit',
-		attrs : [ 'name', 'guard', 'units' ]
-	}, {
-		name : ''
-	}, function(circuit) {
-		return {
-			name : circuit.getName()
-		}
-	}, {
-		ACL : new Parse.ACL(ParseService.Account.getCurrentUser()),
-		owner : ParseService.Account.getCurrentUser()
-	});
-
-	return factory;
-
-} ]);
-
 app.factory('StandardNgTable', [
 		'$filter',
 		'ngTableParams',

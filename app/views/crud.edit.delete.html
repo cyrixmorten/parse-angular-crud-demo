@@ -1,9 +1,9 @@
-<a ng-if="!crudObject.$edit" ng-hide="performingEdit" href=""
+<a ng-if="!crudObject.$edit" ng-hide="performingEdit" 
 	class="btn btn-default btn-sm"
-	ng-click="crudObject.$edit = true; edit(crudObject)">Edit</a>
-<a ng-if="!crudObject.$edit" ng-hide="performingEdit" href=""
-	class="btn btn-default btn-sm" ng-click="remove(crudObject)">Delete</a>
-<a ng-if="crudObject.$edit" href="" class="btn btn-primary btn-sm"
-	ng-click="crudObject.$edit = false; save(crudObject)">Save</a>
-<a ng-if="crudObject.$edit" href="" class="btn btn-primary btn-sm"
-	ng-click="crudObject.$edit = false; save()">Cancel</a>
+	ng-click="crudObject.$edit = true; edit()">{{'EDIT' | translate}}</a>
+<a ng-if="!crudObject.$edit" ng-hide="performingEdit" 
+	class="btn btn-default btn-sm" ng-click="remove(crudObject)">{{'REMOVE' | translate}}</a>
+<a ng-if="crudObject.$edit" class="btn btn-primary btn-sm"
+	ng-click="crudObject.$edit = false; save(crudObject)">{{'SAVE' | translate}}</a>
+<a ng-if="crudObject.$edit" class="btn btn-primary btn-sm"
+	ng-click="crudObject.$edit = false; cancel()">{{'CANCEL' | translate}}</a>

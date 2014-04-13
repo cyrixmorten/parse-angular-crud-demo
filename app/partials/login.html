@@ -1,9 +1,9 @@
 <div class=".container-signin">
     <form class="form-signin" role="form">
-        <h2 class="form-signin-heading">Please sign in</h2>
-        <input type="text" class="form-control" placeholder="Username" ng-model="user.username" required autofocus>
-        <input type="password" class="form-control" placeholder="Password" ng-model="user.password" required>
+        <h2 class="form-signin-heading">{{'TITLE_LOGIN' | translate}}</h2>
+        <input type="text" class="form-control" placeholder="{{'USERNAME' | translate}}" ng-model="user.username" required autofocus>
+        <input type="password" class="form-control" placeholder="{{'PASSWORD' | translate}}" ng-model="user.password" required>
 
-        <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="login(user)">Sign in</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="login(user)">{{'LOGIN' | translate}}</button>
    </form>
 </div>
