@@ -24,7 +24,7 @@ Model definition of a ParseObject `/js/services.js`:
 			}
 		});
             
-Controller code exposing CRUD features:
+Controller code exposing CRUD features `/js/controllers.js`:
 
 	controllerModule.controller('GuardCtrl', [ '$scope', 'ParseObjects',
 			function($scope, ParseObjects) {
@@ -47,7 +47,7 @@ Controller code exposing CRUD features:
             
 And finally the View that talks to GuardCtrl can be found at `/partials/crud/guards.html`
 
-The following part of `/js/app.js` ensures that the Controller `CRUDCtrl` is a parent for `GuardCtrl`:
+The following part of `/js/app.js` ensures that the Controller `CRUDCtrl` is a parent of `GuardCtrl`:
 
 	segment('crud', {templateUrl: 'partials/crud.html', controller: 'CRUDCtrl'}).
     within().
